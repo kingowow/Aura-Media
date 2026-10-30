@@ -1,0 +1,334 @@
+{
+  "name": "Aura Media",
+  "badgeLabel": "Aura",
+  "signingKey": "cbec121aa82ebb02aaa73806992e0368a97d47b5451ed6524816d03084c45905",
+  "contact": {
+    "website": "https://github.com/kingowow/Aura-Media",
+    "discord": ""
+  },
+  "extensionList": {
+    "extensions": [
+      {
+        "name": "AnimeOnsen",
+        "packageName": "eu.kanade.tachiyomi.animeextension.all.animeonsen",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-all.animeonsen-v14.10.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.all.animeonsen.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "10",
+        "versionName": "14.10",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "8542735178285060053",
+            "name": "AnimeOnsen",
+            "language": "all",
+            "homeUrl": "https://www.animeonsen.xyz"
+          }
+        ]
+      },
+      {
+        "name": "AniZone",
+        "packageName": "eu.kanade.tachiyomi.animeextension.all.anizone",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-all.anizone-v16.15.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.all.anizone.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "15",
+        "versionName": "16.15",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "954848840440936266",
+            "name": "AniZone",
+            "language": "all",
+            "homeUrl": "https://anizone.to"
+          }
+        ]
+      },
+      {
+        "name": "Subsplease",
+        "packageName": "eu.kanade.tachiyomi.animeextension.all.subsplease",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-all.subsplease-v14.8.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.all.subsplease.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "8",
+        "versionName": "14.8",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "isTorrent": true,
+        "sources": [
+          {
+            "id": "8766955949256845198",
+            "name": "Subsplease",
+            "language": "all",
+            "homeUrl": "https://subsplease.org"
+          }
+        ]
+      },
+      {
+        "name": "Serienstream",
+        "packageName": "eu.kanade.tachiyomi.animeextension.de.serienstream",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-de.serienstream-v14.35.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.de.serienstream.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "35",
+        "versionName": "14.35",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "5798377917298605009",
+            "name": "Serienstream",
+            "language": "de",
+            "homeUrl": "https://serienstream.to"
+          }
+        ]
+      },
+      {
+        "name": "Anichi",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.anichi",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.anichi-v16.10.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.anichi.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "10",
+        "versionName": "16.10",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "1023516189537091690",
+            "name": "Anichi",
+            "language": "en",
+            "homeUrl": "https://anichi.to"
+          }
+        ]
+      },
+      {
+        "name": "Anikoto",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.anikoto",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.anikoto-v16.10.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.anikoto.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "10",
+        "versionName": "16.10",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "4697393375201558791",
+            "name": "Anikoto",
+            "language": "en",
+            "homeUrl": "https://anikototv.to"
+          }
+        ]
+      },
+      {
+        "name": "AnimeGG",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.animegg",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.animegg-v14.2.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.animegg.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "2",
+        "versionName": "14.2",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "2247987965040486818",
+            "name": "AnimeGG",
+            "language": "en",
+            "homeUrl": "https://www.animegg.org"
+          }
+        ]
+      },
+      {
+        "name": "AnimeSogo",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.animesogo",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.animesogo-v16.10.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.animesogo.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "10",
+        "versionName": "16.10",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "8456322126210259639",
+            "name": "AnimeSogo",
+            "language": "en",
+            "homeUrl": "https://animesogo.to"
+          }
+        ]
+      },
+      {
+        "name": "AnimeTake",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.animetake",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.animetake-v16.21.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.animetake.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "21",
+        "versionName": "16.21",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "7460925030423755739",
+            "name": "AnimeTake",
+            "language": "en",
+            "homeUrl": "https://animetake.tv"
+          }
+        ]
+      },
+      {
+        "name": "AniWave (Unoriginal)",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.aniwave",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.aniwave-v16.12.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.aniwave.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "12",
+        "versionName": "16.12",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "4383278740715532790",
+            "name": "AniWave (Unoriginal)",
+            "language": "en",
+            "homeUrl": "https://animewave.to"
+          }
+        ]
+      },
+      {
+        "name": "KickAssAnime",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.kickassanime",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.kickassanime-v14.63.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.kickassanime.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "63",
+        "versionName": "14.63",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "2081771513481539599",
+            "name": "KickAssAnime",
+            "language": "en",
+            "homeUrl": "https://kaa.lt"
+          }
+        ]
+      },
+      {
+        "name": "AnimeKai (Unoriginal)",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.kotokai",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.kotokai-v16.10.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.kotokai.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "10",
+        "versionName": "16.10",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "1571236147208399860",
+            "name": "AnimeKai (Unoriginal)",
+            "language": "en",
+            "homeUrl": "https://animekaitv.to"
+          }
+        ]
+      },
+      {
+        "name": "MoviesMod",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.moviesmod",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.moviesmod-v16.4.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.moviesmod.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "4",
+        "versionName": "16.4",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "2828515480418041073",
+            "name": "Movies Mod",
+            "language": "en",
+            "homeUrl": "https://moviesmod.zone"
+          }
+        ]
+      },
+      {
+        "name": "123Anime",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.onetwothreeanime",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.onetwothreeanime-v14.3.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.onetwothreeanime.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "3",
+        "versionName": "14.3",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "9168084761765988435",
+            "name": "123Anime",
+            "language": "en",
+            "homeUrl": "https://123animehub.cc"
+          }
+        ]
+      },
+      {
+        "name": "UHD Movies",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.uhdmovies",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.uhdmovies-v14.19.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.uhdmovies.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "19",
+        "versionName": "14.19",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "582068848290425167",
+            "name": "UHD Movies",
+            "language": "en",
+            "homeUrl": "https://uhdmovies.vip"
+          }
+        ]
+      },
+      {
+        "name": "UniqueStream",
+        "packageName": "eu.kanade.tachiyomi.animeextension.en.uniquestream",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-en.uniquestream-v16.10.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.en.uniquestream.png"
+        },
+        "extensionLib": "16",
+        "versionCode": "10",
+        "versionName": "16.10",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "1915898919039572670",
+            "name": "UniqueStream",
+            "language": "en",
+            "homeUrl": "https://anime.uniquestream.net"
+          }
+        ]
+      }
+    ]
+  }
+}
