@@ -9,6 +9,44 @@
   "extensionList": {
     "extensions": [
       {
+        "name": "StreamingCommunity",
+        "packageName": "eu.kanade.tachiyomi.animeextension.all.streamingcommunity",
+        "resources": {
+          "apkUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/apk/aniyomi-all.streamingcommunity-v14.24.apk",
+          "iconUrl": "https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/icon/eu.kanade.tachiyomi.animeextension.all.streamingcommunity.png"
+        },
+        "extensionLib": "14",
+        "versionCode": "24",
+        "versionName": "14.24",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "665657603807796138",
+            "name": "StreamingUnity (Movie)",
+            "language": "en",
+            "homeUrl": "https://streamingunity.fun"
+          },
+          {
+            "id": "502708102217708509",
+            "name": "StreamingUnity (Movie)",
+            "language": "it",
+            "homeUrl": "https://streamingunity.fun"
+          },
+          {
+            "id": "349088835984594821",
+            "name": "StreamingUnity (Tv)",
+            "language": "en",
+            "homeUrl": "https://streamingunity.fun"
+          },
+          {
+            "id": "7246470104959245892",
+            "name": "StreamingUnity (Tv)",
+            "language": "it",
+            "homeUrl": "https://streamingunity.fun"
+          }
+        ]
+      },
+      {
         "name": "AnimeOnsen",
         "packageName": "eu.kanade.tachiyomi.animeextension.all.animeonsen",
         "resources": {
