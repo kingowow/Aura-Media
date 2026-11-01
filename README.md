@@ -1,7 +1,7 @@
 # Aura Media
 
 <p align="center">
-  <img src="docs/hibiki-round.svg" alt="Aura Media logo" width="120" />
+  <img src="docs/aura.png" alt="Aura Media logo" width="120" />
 </p>
 
 <h1 align="center">Aura Media</h1>
