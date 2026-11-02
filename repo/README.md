@@ -10,11 +10,11 @@ https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/index.min.json
 ```
 
 ## Sources
-- StreamingCommunity
+- StreamingCommunity ( فیلم و سریال )
 - AnimeOnsen
-- AniZone
+- AniZone 
 - Subsplease
-- Serienstream
+- Serienstream ( فیلم و سریال )
 - Anichi
 - Anikoto
 - AnimeGG
@@ -23,7 +23,7 @@ https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/index.min.json
 - AniWave (Unoriginal)
 - KickAssAnime
 - AnimeKai (Unoriginal)
-- MoviesMod
+- MoviesMod ( فیلم و سریال )
 - 123Anime
 - UHD Movies
 - UniqueStream
