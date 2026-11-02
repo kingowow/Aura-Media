@@ -7,8 +7,8 @@
 <h1 align="center">Aura Media</h1>
 
 <p align="center">
-  <b>A streaming platform for movies and series with high-quality playback and automatic subtitles.</b><br/>
-  <sub>پلتفرم استریم فیلم و سریال با پخش باکیفیت و زیرنویس خودکار.</sub>
+  <b>A streaming platform for anime + movies and series with high-quality playback and automatic subtitles.</b><br/>
+  <sub>پلتفرم استریم انیمه + فیلم و سریال با پخش باکیفیت و زیرنویس خودکار.</sub>
 </p>
 
 <p align="center">
@@ -113,11 +113,11 @@ Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
 
 ### ✨ امکانات
 
-- 🎬 **پخش باکیفیت** — مبتنی بر ExoPlayer / Media3، با پشتیبانی از تصویر در تصویر (PiP).
+- 🎬 **پخش کننده باکیفیت** — مبتنی بر ExoPlayer / Media3، با پشتیبانی از تصویر در تصویر (PiP).
 - 📺 **کاتالوگ فیلم و سریال** با جستجو، ژانرها و جزئیات.
-- 🔤 **زیرنویس خودکار** — جستجو، دانلود و اعمال زیرنویس فارسی/انگلیسی به‌صورت لحظه‌ای.
+- 🔤 **زیرنویس خودکار** — جستجو، دانلود و اعمال زیرنویس فارسی/انگلیسی و... + ترجمه زیرنویس با هوش مصنوعی و هوشمند.
 - 🌐 **افزونه‌های چندمنبعی** — سیستم افزونهٔ سازگار با Aniyomi (منابع مبتنی بر APK).
-- 🌙 **همگام‌سازی AniList** — پیگیری و همگام‌سازی کتابخانه (OAuth ضمنی).
+- 🌙 **کتابخانه فیلم و سریال** — ذخیره ، علامت گذاری ، دیده شده و... قسمت ها.
 - ⬇️ **دانلود آفلاین** — صف، کش و تماشای آفلاین.
 - 🎨 **رابط مدرن** — Jetpack Compose، Material 3، تم تاریک، پشتیبانی RTL.
 - 🌍 **دو‌زبانه** — محلی‌سازی کامل فارسی و انگلیسی.
@@ -158,7 +158,7 @@ cd Aura-Media
 # خروجی: app/build/outputs/apk/debug/app-debug.apk
 ```
 
-> نیاز به JDK 17 دارد. در ایران فقط مخزن **Myket** در دسترس است؛ پروژه از پیش با چندین mirror (Aliyun، Myket، مخازن ایرانی) پیکربندی شده است.
+> نیاز به JDK 17 دارد. پروژه از پیش با چندین mirror (Aliyun، Myket، مخازن ایرانی) پیکربندی شده است.
 
 ### 📦 ساختار ریپو (ایندکس افزونه‌ها)
 
@@ -174,7 +174,7 @@ repo/
 └── api/               # تعریف APIها
 ```
 
-آدرس این مخزن را در Aniyomi / Aura Media اضافه کنید: `https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/`
+آدرس این مخزن را در Aniyomi / Aura Media اضافه کنید ( به صورت پیش فرض در اپلیکیشن اضافه شده ): `https://raw.githubusercontent.com/kingowow/Aura-Media/main/repo/`
 
 ### 🤝 مشارکت
 
@@ -190,6 +190,6 @@ repo/
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/kingowow">@kingowow</a><br/>
-  <sub>با عشق ساخته شده توسط <a href="https://github.com/kingowow">@kingowow</a></sub>
+  Made by <a href="https://github.com/kingowow">@kingowow</a><br/>
+  <sub>telegram channel: <a href="https://t.me/kingo_team">@kingo_team</a></sub>
 </p>
