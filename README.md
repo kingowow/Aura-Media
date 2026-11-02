@@ -105,6 +105,10 @@ Add this repo URL in Aniyomi / Aura Media: `https://raw.githubusercontent.com/ki
 
 Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
 
+<p align="center">
+  Thanks to <a href="https://github.com/akkirrai1337/hibiki">hibiki-app</a><br/>
+  <sub>Kingo team telegram channel: <a href="https://t.me/kingo_team">@kingo_team</a></sub>
+</p>
 ---
 
 <a id="فارسی"></a>
