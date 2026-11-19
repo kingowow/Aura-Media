@@ -3,9 +3,12 @@ package org.akkirrai.hibiki.feature.library
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.BackHandler
@@ -45,6 +48,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -79,6 +83,8 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
+import androidx.media3.common.text.CueGroup
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.withTimeoutOrNull
@@ -88,6 +94,7 @@ import org.akkirrai.hibiki.app.settings.LocalAppPreferencesState
 import org.akkirrai.hibiki.core.design.component.AppFilledIconButton
 import org.akkirrai.hibiki.core.design.component.AppFilledIconButtonStyle
 import org.akkirrai.hibiki.core.localvideo.LocalVideoHistory
+import org.akkirrai.hibiki.core.log.AppLogger
 import org.akkirrai.hibiki.core.localvideo.openVideoWithAnotherApp
 import org.akkirrai.hibiki.core.model.PlaybackSettingsOptions
 import org.akkirrai.hibiki.feature.player.AnimatedSeekOverlayArrow
@@ -105,6 +112,7 @@ import org.akkirrai.hibiki.feature.player.PlayerPlaybackPositionPollingEffect
 import org.akkirrai.hibiki.feature.player.PlayerSettingsDestination
 import org.akkirrai.hibiki.feature.player.SelectableValue
 import org.akkirrai.hibiki.feature.player.PlayerSettingsSheet
+import org.akkirrai.hibiki.feature.player.PlayerSubtitleOverlay
 import org.akkirrai.hibiki.feature.player.PlayerTopOverlay
 import org.akkirrai.hibiki.feature.player.PlayerUnlockButton
 import org.akkirrai.hibiki.feature.player.PLAYER_SETTINGS_PANEL_RESTING_OFFSET_Y
@@ -114,6 +122,7 @@ import org.akkirrai.hibiki.feature.player.SEEK_INCREMENT_MS
 import org.akkirrai.hibiki.feature.player.applyVideoScale
 import org.akkirrai.hibiki.feature.player.buildPictureInPictureParams
 import org.akkirrai.hibiki.feature.player.buildSeekDeltaLabel
+import org.akkirrai.hibiki.feature.player.cueLinesAt
 
 /**
  * Plays one `content://` video picked from the device.
@@ -157,6 +166,7 @@ fun LocalVideoPlayerScreen(
     val view = LocalView.current
     val viewConfiguration = LocalViewConfiguration.current
     var holdSpeedOverlayVisible by remember { mutableStateOf(false) }
+    var isHoldSpeedActive by remember { mutableStateOf(false) }
     val activity = remember(context, view) { context.findLocalActivity() ?: view.context.findLocalActivity() }
     val pictureInPictureSupported = activity?.packageManager
         ?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true
@@ -198,8 +208,36 @@ fun LocalVideoPlayerScreen(
     val restoreWindowUiState = remember { mutableStateOf<(() -> Unit)?>(null) }
 
     val exoPlayer = remember(entry.id) {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(uri))
+        // Same decoder-fallback need as the main player: the Unisoc hardware HEVC decoder
+        // fails on some streams and without fallback playback dies instead of degrading.
+        ExoPlayer.Builder(
+            context,
+            DefaultRenderersFactory(context).apply { setEnableDecoderFallback(true) },
+        ).build().apply {
+            val mediaItemBuilder = MediaItem.Builder().setUri(uri)
+            // Re-apply the subtitle the user attached to this video last time, if any.
+            // Older builds saved the SAF subtitle with only the temporary read grant,
+            // which dies with the process; re-attaching then fails silently, so check
+            // readability first and drop the stale reference instead.
+            entry.subtitleUri.takeIf { it.isNotBlank() }?.let { saved ->
+                val savedUri = Uri.parse(saved)
+                val readable = runCatching {
+                    context.contentResolver.openInputStream(savedUri)?.use { true } ?: false
+                }.getOrDefault(false)
+                when {
+                    readable -> mediaItemBuilder.setSubtitleConfigurations(
+                        listOf(localSubtitleConfiguration(context, savedUri)),
+                    )
+                    else -> {
+                        AppLogger.w(
+                            "HibikiLocalPlayback",
+                            "[local.subtitles.stale_cleared] video=${entry.displayName}",
+                        )
+                        history.clearSubtitle(entry.id)
+                    }
+                }
+            }
+            setMediaItem(mediaItemBuilder.build())
             playWhenReady = true
             playbackParameters = PlaybackParameters(preferencesState.playbackSpeed)
             prepare()
@@ -259,6 +297,25 @@ fun LocalVideoPlayerScreen(
     // These remember blocks reference keepControlsVisible() so must come AFTER the fun is
     // declared above. Rebuilt whenever ExoPlayer fires onTracksChanged.
     var currentTracks by remember { mutableStateOf<Tracks>(Tracks.EMPTY) }
+
+    // Captions for the shared subtitle overlay: the lines of the active cue plus a short
+    // history of cue activations, so the offset setting can shift them earlier/later. Same
+    // onCues wiring as the streamed player (PlayerScreen).
+    val subtitleLinesState = remember(entry.id) { mutableStateOf(emptyList<String>()) }
+    val subtitleCueEventsState = remember(entry.id) {
+        mutableStateOf(emptyList<Pair<Long, List<String>>>())
+    }
+    val currentSubtitleLines = remember(entry.id, preferencesState.subtitleOffsetMs) {
+        derivedStateOf {
+            val offsetMs = preferencesState.subtitleOffsetMs
+            if (offsetMs == 0) {
+                subtitleLinesState.value
+            } else {
+                // Positive offset = show later: the event only wins once position passes it.
+                cueLinesAt(subtitleCueEventsState.value, positionMsState.longValue - offsetMs)
+            }
+        }
+    }
 
     val audioTrackValues: List<SelectableValue> = remember(currentTracks) {
         val audioGroups = currentTracks.groups.filter { it.type == C.TRACK_TYPE_AUDIO }
@@ -331,32 +388,67 @@ fun LocalVideoPlayerScreen(
         listOf(offEntry) + tracks
     }
 
-    // SAF launcher for sideloading a subtitle file (SRT/ASS/VTT)
+    // Declared before the picker so the SAF result callback can call it: a local function is
+    // not in scope for lambdas created before its declaration.
+    fun addExternalSubtitle(subUri: Uri) {
+        val subConf = localSubtitleConfiguration(context, subUri)
+        val newItem = MediaItem.Builder().setUri(uri).setSubtitleConfigurations(listOf(subConf)).build()
+        val pos = exoPlayer.currentPosition
+        exoPlayer.setMediaItem(newItem, pos)
+        // setMediaItem(..., pos) re-prepares on its own. A stale "subtitles off" state
+        // (track type disabled, e.g. from the Off entry in the settings sheet) survives the
+        // re-prepare and would keep the new track hidden: re-enable text tracks and clear
+        // overrides so the DEFAULT selection flag picks the fresh track.
+        exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
+            .buildUpon()
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+            .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+            .build()
+        history.setSubtitle(entry.id, subUri.toString())
+        AppLogger.d(
+            "HibikiLocalPlayback",
+            "[local.subtitles.added] label=${subConf.label} mime=${subConf.mimeType} " +
+                "pos=${pos}ms uri=${subUri}",
+        )
+        keepControlsVisible()
+    }
+
+    // SAF launcher for sideloading a subtitle file (SRT/ASS/VTT). The subtitle is attached to a
+    // rebuilt media item and re-prepared in place; a previously disabled text-track state ("Off"
+    // chosen earlier) is cleared so the fresh track actually gets selected and rendered.
     val subtitlePickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { subUri ->
         if (subUri == null) return@rememberLauncherForActivityResult
-        val fileName = subUri.lastPathSegment ?: subUri.toString()
-        val mimeType = when {
-            fileName.endsWith(".ass", true) || fileName.endsWith(".ssa", true) -> MimeTypes.TEXT_SSA
-            fileName.endsWith(".vtt", true) -> MimeTypes.TEXT_VTT
-            else -> MimeTypes.APPLICATION_SUBRIP
+        // SAF grants from the document picker are temporary (they die with the process),
+        // but the subtitle is re-attached from history on the next open of this video.
+        // Take a persistable read grant, the same way rememberVideoPicker does for the
+        // video document itself, or the re-applied subtitle silently stops loading.
+        runCatching {
+            context.applicationContext.contentResolver.takePersistableUriPermission(
+                subUri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION,
+            )
+        }.onFailure {
+            AppLogger.w(
+                "HibikiLocalPlayback",
+                "[local.subtitles.persist_failed] ${it.javaClass.simpleName}: ${it.message}",
+            )
         }
-        val subConf = androidx.media3.common.MediaItem.SubtitleConfiguration.Builder(subUri)
-            .setMimeType(mimeType)
-            .setSelectionFlags(androidx.media3.common.C.SELECTION_FLAG_DEFAULT)
-            .build()
-        val newItem = MediaItem.Builder().setUri(uri).setSubtitleConfigurations(listOf(subConf)).build()
-        val pos = exoPlayer.currentPosition
-        exoPlayer.setMediaItem(newItem, pos)
-        exoPlayer.prepare()
-        keepControlsVisible()
+        addExternalSubtitle(subUri)
     }
 
     DisposableEffect(entry.id, exoPlayer) {
         val listener = object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
                 playbackError = error
+                // Carries the subtitle re-prepare failures that otherwise vanish silently
+                // (unreadable SAF uri after a restart, unparseable file, ...).
+                AppLogger.w(
+                    "HibikiLocalPlayback",
+                    "[local.playback.error] ${error.errorCodeName}: ${error.message}",
+                    error,
+                )
             }
 
             override fun onIsPlayingChanged(playing: Boolean) {
@@ -368,7 +460,7 @@ fun LocalVideoPlayerScreen(
             }
 
             override fun onPlaybackParametersChanged(params: PlaybackParameters) {
-                playbackSpeed = params.speed
+                if (!isHoldSpeedActive) playbackSpeed = params.speed
             }
 
             // FIT / crop need the real shape of the file, otherwise a 4:3 clip gets letterboxed
@@ -381,6 +473,36 @@ fun LocalVideoPlayerScreen(
 
             override fun onTracksChanged(tracks: Tracks) {
                 currentTracks = tracks
+                val textGroups = tracks.groups.filter { it.type == C.TRACK_TYPE_TEXT }
+                if (textGroups.isNotEmpty()) {
+                    AppLogger.d(
+                        "HibikiLocalPlayback",
+                        "[local.subtitles.tracks] textGroups=${textGroups.size}",
+                    )
+                }
+                // When the user toggles all text tracks off, drop the stale caption lines so
+                // the overlay goes quiet instead of showing the last cue forever.
+                val anyTextSelected = textGroups.any { grp ->
+                    (0 until grp.length).any { grp.isTrackSelected(it) }
+                }
+                if (!anyTextSelected) {
+                    subtitleLinesState.value = emptyList()
+                    subtitleCueEventsState.value = emptyList()
+                }
+            }
+
+            // Feeds the styled caption overlay (ExoPlayer fires this from its text renderer
+            // regardless of the built-in SubtitleView being hidden).
+            override fun onCues(cueGroup: CueGroup) {
+                val visibleLines = cueGroup.cues.mapNotNull { cue ->
+                    cue.text?.toString()?.trim()?.takeIf(String::isNotBlank)
+                }.distinct()
+                subtitleLinesState.value = visibleLines
+                // Capture the moment these cues became active so the offset slider can shift
+                // them earlier/later (same history approach as the streamed player).
+                subtitleCueEventsState.value =
+                    (subtitleCueEventsState.value + (positionMsState.longValue to visibleLines))
+                        .takeLast(128)
             }
         }
         exoPlayer.addListener(listener)
@@ -501,6 +623,7 @@ fun LocalVideoPlayerScreen(
                         }
                         if (event == null) {
                             holdSpeedActive = true
+                            isHoldSpeedActive = true
                             holdSpeedOverlayVisible = true
                             exoPlayer.playbackParameters = PlaybackParameters(2f)
                             continue
@@ -521,6 +644,7 @@ fun LocalVideoPlayerScreen(
 
                     if (holdSpeedActive) {
                         holdSpeedOverlayVisible = false
+                        isHoldSpeedActive = false
                         exoPlayer.playbackParameters = PlaybackParameters(playbackSpeed)
                         return@awaitEachGesture
                     }
@@ -577,14 +701,24 @@ fun LocalVideoPlayerScreen(
                         setShowBuffering(PlayerView.SHOW_BUFFERING_NEVER)
                         player = exoPlayer
                         applyVideoScale(videoScaleMode, videoAspectRatio)
+                        // Captions render in the shared PlayerSubtitleOverlay (which honors the
+                        // user's styling settings), so keep ExoPlayer's built-in view out of it.
+                        subtitleView?.visibility = View.GONE
                     }
             },
             update = { playerView ->
                 playerView.player = if (playbackError != null) null else exoPlayer
                 playerView.applyVideoScale(videoScaleMode, videoAspectRatio)
+                playerView.subtitleView?.visibility = View.GONE
             },
             modifier = Modifier.fillMaxSize(),
         )
+
+        // The styled caption overlay needs to know whether any text track is selected; the
+        // same flag feeds the bottom bar's subtitle icon, so compute it once.
+        val subtitleTrackSelected = currentTracks.groups
+            .filter { it.type == C.TRACK_TYPE_TEXT }
+            .any { grp -> (0 until grp.length).any { grp.isTrackSelected(it) } }
 
         AnimatedVisibility(
             visible = !isPictureInPictureActive &&
@@ -677,9 +811,7 @@ fun LocalVideoPlayerScreen(
                     },
                     // Reflect the actual subtitle state from ExoPlayer.
                     // True = at least one text track is selected and not disabled.
-                    subtitlesEnabled = currentTracks.groups
-                        .filter { it.type == C.TRACK_TYPE_TEXT }
-                        .any { grp -> (0 until grp.length).any { grp.isTrackSelected(it) } },
+                    subtitlesEnabled = subtitleTrackSelected,
                     onSubtitlesClick = {
                         // Toggle: if any text track is active, disable all; otherwise re-enable
                         // the default (ExoPlayer will pick the best available).
@@ -733,6 +865,24 @@ fun LocalVideoPlayerScreen(
                 )
             }
         }
+
+        // Styled captions (size, colors, background, outline, position, offset all come from
+        // the shared subtitle settings), replacing the built-in SubtitleView. Lives OUTSIDE the
+        // controls' AnimatedVisibility so captions keep showing in the controls-hidden
+        // ("video only") mode.
+        PlayerSubtitleOverlay(
+            lines = currentSubtitleLines.value,
+            visible = subtitleTrackSelected && !isAudioOnlyState.value,
+            controlsVisible = controlsVisible,
+            textColor = Color(preferencesState.subtitleTextColor),
+            textScale = preferencesState.subtitleTextScale,
+            backgroundColor = Color(preferencesState.subtitleBackgroundColor),
+            backgroundOpacity = preferencesState.subtitleBackgroundOpacity,
+            positionFraction = preferencesState.subtitlePosition,
+            outlineColor = Color(preferencesState.subtitleOutlineColor),
+            outlineWidthDp = preferencesState.subtitleOutlineWidthDp.toFloat(),
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
 
         AnimatedVisibility(
             visible = doubleTapSeek.overlayVisible && doubleTapSeek.overlayDeltaMs != 0L,
@@ -914,9 +1064,10 @@ fun LocalVideoPlayerScreen(
                     onAutoSkipSegmentsChange = { keepControlsVisible() },
                     onAutoPlayNextEpisodeChange = { keepControlsVisible() },
                     // Audio track selector is shown when the file has > 1 audio track.
-                    // Subtitle selector is shown via subtitleValues list above.
                     // Episode-level options (auto-play-next, auto-skip) are hidden.
-                    showSubtitles = subtitleTrackValues.size > 1,
+                    // Subtitles page is ALWAYS shown: it hosts "Add subtitle file", which must
+                    // be reachable for MP4/MKV files that carry no embedded subtitle tracks.
+                    showSubtitles = true,
                     showEpisodeOptions = false,
                 )
             }
@@ -958,4 +1109,62 @@ private tailrec fun Context.findLocalActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findLocalActivity()
     else -> null
+}
+
+/**
+ * Builds the [MediaItem.SubtitleConfiguration] for a SAF subtitle file, resolving the MIME type
+ * the same way the main player does: the real display name first (the URI's last segment is
+ * often a bare document id, not the file name), and the file content as a fallback when the
+ * extension is missing or unknown. The chosen decoder must match the bytes, otherwise ExoPlayer
+ * parses nothing and the "added" subtitle never appears.
+ */
+private fun localSubtitleConfiguration(context: Context, subUri: Uri): MediaItem.SubtitleConfiguration {
+    val name = context.subtitleDisplayName(subUri)
+    val headBytes = runCatching {
+        context.contentResolver.openInputStream(subUri)?.use { input ->
+            input.readNBytes(2048)
+        }
+    }.getOrNull()
+    return MediaItem.SubtitleConfiguration.Builder(subUri)
+        .setMimeType(resolveLocalSubtitleMime(name, headBytes))
+        .setLabel(name)
+        .setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
+        .build()
+}
+
+private fun Context.subtitleDisplayName(uri: Uri): String {
+    contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+        val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (index >= 0 && cursor.moveToFirst()) {
+            cursor.getString(index)?.trim()?.takeIf(String::isNotBlank)?.let { return it }
+        }
+    }
+    return uri.lastPathSegment?.substringAfterLast('/')?.takeIf(String::isNotBlank)
+        ?: "Subtitle"
+}
+
+/** Extension wins when it names a supported format; otherwise sniff the head, defaulting to SRT. */
+private fun resolveLocalSubtitleMime(name: String, headBytes: ByteArray?): String {
+    val lower = name.lowercase()
+    when {
+        lower.endsWith(".ass") || lower.endsWith(".ssa") -> return MimeTypes.TEXT_SSA
+        lower.endsWith(".vtt") -> return MimeTypes.TEXT_VTT
+        lower.endsWith(".srt") -> return MimeTypes.APPLICATION_SUBRIP
+    }
+    val head = headBytes?.let { bytes ->
+        when {
+            // BOM-aware, mirrors SubtitleFormat.decodeText: some subtitle files ship UTF-16.
+            bytes.size > 1 && bytes[0] == 0xFF.toByte() && bytes[1] == 0xFE.toByte() ->
+                String(bytes, Charsets.UTF_16LE)
+            bytes.size > 1 && bytes[0] == 0xFE.toByte() && bytes[1] == 0xFF.toByte() ->
+                String(bytes, Charsets.UTF_16BE)
+            else -> String(bytes, Charsets.UTF_8)
+        }
+    }?.trimStart { it.isWhitespace() || it == '﻿' } ?: return MimeTypes.APPLICATION_SUBRIP
+    return when {
+        head.startsWith("WEBVTT") -> MimeTypes.TEXT_VTT
+        head.contains("[Script Info]", ignoreCase = true) ||
+            head.contains("[V4+ Styles]", ignoreCase = true) -> MimeTypes.TEXT_SSA
+        else -> MimeTypes.APPLICATION_SUBRIP
+    }
 }

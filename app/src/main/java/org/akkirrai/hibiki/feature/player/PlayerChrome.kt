@@ -58,6 +58,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -66,6 +67,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -1159,6 +1161,120 @@ internal fun androidx.compose.foundation.lazy.LazyListScope.playerSettingsItems(
                     )
                 }
             }
+            item(key = "subtitle_background") {
+                val appPreferences = LocalAppPreferences.current
+                val prefs = LocalAppPreferencesState.current
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                    Text(
+                        text = stringResource(R.string.watch_player_subtitles_background),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 10.dp),
+                    ) {
+                        SUBTITLE_BG_COLOR_PRESETS.forEach { argb ->
+                            val selected = prefs.subtitleBackgroundColor == argb
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .background(Color(argb), CircleShape)
+                                    .border(
+                                        width = if (selected) 3.dp else 1.dp,
+                                        color = if (selected) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                        },
+                                        shape = CircleShape,
+                                    )
+                                    .clickable { appPreferences.setSubtitleBackgroundColor(argb) },
+                            )
+                        }
+                    }
+                    Text(
+                        text = stringResource(R.string.watch_player_subtitles_background_opacity) +
+                            " · ${(prefs.subtitleBackgroundOpacity * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(top = 14.dp),
+                    )
+                    Slider(
+                        value = prefs.subtitleBackgroundOpacity,
+                        onValueChange = appPreferences::setSubtitleBackgroundOpacity,
+                        valueRange = SUBTITLE_BG_OPACITY_MIN..SUBTITLE_BG_OPACITY_MAX,
+                    )
+                }
+            }
+            item(key = "subtitle_position") {
+                val appPreferences = LocalAppPreferences.current
+                val prefs = LocalAppPreferencesState.current
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                    Text(
+                        text = stringResource(R.string.watch_player_subtitles_position) +
+                            " · ${(prefs.subtitlePosition * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Slider(
+                        value = prefs.subtitlePosition,
+                        onValueChange = appPreferences::setSubtitlePosition,
+                        valueRange = SUBTITLE_POSITION_MIN..SUBTITLE_POSITION_MAX,
+                    )
+                }
+            }
+            item(key = "subtitle_outline") {
+                val appPreferences = LocalAppPreferences.current
+                val prefs = LocalAppPreferencesState.current
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                    Text(
+                        text = stringResource(R.string.watch_player_subtitles_outline),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 10.dp),
+                    ) {
+                        SUBTITLE_OUTLINE_PRESETS.forEach { argb ->
+                            val selected = prefs.subtitleOutlineColor == argb
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .background(Color(argb), CircleShape)
+                                    .border(
+                                        width = if (selected) 3.dp else 1.dp,
+                                        color = if (selected) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                        },
+                                        shape = CircleShape,
+                                    )
+                                    .clickable { appPreferences.setSubtitleOutlineColor(argb) },
+                            )
+                        }
+                    }
+                    Text(
+                        text = stringResource(R.string.watch_player_subtitles_outline_width) +
+                            " · ${prefs.subtitleOutlineWidthDp}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(top = 14.dp),
+                    )
+                    Slider(
+                        value = prefs.subtitleOutlineWidthDp.toFloat(),
+                        onValueChange = { value ->
+                            appPreferences.setSubtitleOutlineWidthDp(value.toInt())
+                        },
+                        valueRange = SUBTITLE_OUTLINE_WIDTH_MIN.toFloat()..SUBTITLE_OUTLINE_WIDTH_MAX.toFloat(),
+                        steps = SUBTITLE_OUTLINE_WIDTH_MAX - SUBTITLE_OUTLINE_WIDTH_MIN - 1,
+                    )
+                }
+            }
             playerSettingsChoices(subtitleValues)
         }
     }
@@ -1185,13 +1301,6 @@ internal enum class PlayerSettingsDestination(
     AudioTrack(R.string.watch_player_settings_audio_track, Icons.Outlined.RecordVoiceOver),
 }
 
-// Kept in sync with AppPreferences.SUBTITLE_* bounds (declared locally so this file needs no
-// extra import for the settings sliders).
-internal val SUBTITLE_SCALE_MIN = 0.75f
-internal val SUBTITLE_SCALE_MAX = 1.75f
-internal const val SUBTITLE_OFFSET_MIN_MS = -15_000
-internal const val SUBTITLE_OFFSET_MAX_MS = 15_000
-
 /** Palette offered for the subtitle text color. */
 internal val SUBTITLE_COLOR_PRESETS = listOf(
     0xFFFFFFFFL,
@@ -1201,6 +1310,35 @@ internal val SUBTITLE_COLOR_PRESETS = listOf(
     0xFFFFA94DL,
     0xFFFF7B9CL,
 )
+
+/** Palette offered for the subtitle background fill. 0 = transparent (no box). */
+internal val SUBTITLE_BG_COLOR_PRESETS = listOf(
+    0x00000000L,
+    0xFF000000L,
+    0xFFFFFFFFL,
+    0xFF1B2A4AL,
+)
+
+/** Palette offered for the text outline (stroke) color. 0 = none. */
+internal val SUBTITLE_OUTLINE_PRESETS = listOf(
+    0x00000000L,
+    0xFF000000L,
+    0xFFFFFFFFL,
+    0xFF1B2A4AL,
+)
+
+// Kept in sync with AppPreferences.SUBTITLE_* bounds (declared locally so this file needs no
+// extra import for the settings sliders).
+internal val SUBTITLE_SCALE_MIN = 0.75f
+internal val SUBTITLE_SCALE_MAX = 1.75f
+internal const val SUBTITLE_OFFSET_MIN_MS = -15_000
+internal const val SUBTITLE_OFFSET_MAX_MS = 15_000
+internal const val SUBTITLE_BG_OPACITY_MIN = 0f
+internal const val SUBTITLE_BG_OPACITY_MAX = 1f
+internal const val SUBTITLE_OUTLINE_WIDTH_MIN = 0
+internal const val SUBTITLE_OUTLINE_WIDTH_MAX = 6
+internal val SUBTITLE_POSITION_MIN = 0.0f
+internal val SUBTITLE_POSITION_MAX = 0.4f
 
 internal fun formatSubtitleOffset(offsetMs: Int): String {
     if (offsetMs == 0) return "0.0s"
@@ -1224,33 +1362,79 @@ internal fun PlayerSubtitleOverlay(
     controlsVisible: Boolean,
     textColor: Color,
     textScale: Float,
+    backgroundColor: Color = Color.Black,
+    backgroundOpacity: Float = 0.76f,
+    positionFraction: Float = 0.08f,
+    outlineColor: Color = Color.Black,
+    outlineWidthDp: Float = 0f,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedVisibility(
-        visible = visible && lines.isNotEmpty(),
-        modifier = modifier
-            .navigationBarsPadding()
-            .padding(
-                start = 24.dp,
-                end = 24.dp,
-                bottom = if (controlsVisible) 108.dp else 34.dp,
-            ),
-        enter = fadeIn(animationSpec = tween(90)),
-        exit = fadeOut(animationSpec = tween(90)),
-    ) {
-        Surface(
-            shape = RoundedCornerShape(3.dp),
-            color = Color.Black.copy(alpha = 0.76f),
+    BoxWithConstraints(modifier = modifier.navigationBarsPadding()) {
+        // Distance of the caption block from the bottom of the video area: above the control
+        // bar while the controls are up, otherwise the user-set position (fraction of the
+        // video height, 0 = bottom edge).
+        val bottomPadding =
+            if (controlsVisible) 108.dp
+            else maxHeight * positionFraction.coerceIn(SUBTITLE_POSITION_MIN, SUBTITLE_POSITION_MAX)
+        val showOutline = outlineWidthDp > 0f && outlineColor.alpha > 0
+        AnimatedVisibility(
+            visible = visible && lines.isNotEmpty(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(start = 24.dp, end = 24.dp, bottom = bottomPadding),
+            enter = fadeIn(animationSpec = tween(90)),
+            exit = fadeOut(animationSpec = tween(90)),
         ) {
-            Text(
-                text = lines.joinToString(separator = "\n"),
-                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
-                color = textColor,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize * textScale,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-            )
+            Surface(
+                shape = RoundedCornerShape(3.dp),
+                color = backgroundColor.copy(alpha = backgroundOpacity),
+            ) {
+                val text = lines.joinToString(separator = "\n")
+                val captionStyle = MaterialTheme.typography.titleMedium
+                val captionSize = captionStyle.fontSize * textScale
+                Box(
+                    modifier = if (showOutline) Modifier.padding((outlineWidthDp + 2f).dp) else Modifier,
+                    contentAlignment = Alignment.Center,
+                ) {
+                    // Compose has no native text stroke: emulate one with ghost copies of the
+                    // caption drawn in eight directions behind the main text.
+                    if (showOutline) {
+                        val step = outlineWidthDp * 1.4f
+                        val ghostOffsets = listOf(
+                            0f to -step,
+                            step to -step,
+                            step to 0f,
+                            step to step,
+                            0f to step,
+                            -step to step,
+                            -step to 0f,
+                            -step to -step,
+                        )
+                        ghostOffsets.forEach { (dx, dy) ->
+                            Text(
+                                text = text,
+                                modifier = Modifier
+                                    .offset(x = dx.dp, y = dy.dp)
+                                    .padding(horizontal = 7.dp, vertical = 3.dp),
+                                color = outlineColor,
+                                fontSize = captionSize,
+                                style = captionStyle,
+                                fontWeight = FontWeight.Medium,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+                    Text(
+                        text = text,
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                        color = textColor,
+                        fontSize = captionSize,
+                        style = captionStyle,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
         }
     }
 }

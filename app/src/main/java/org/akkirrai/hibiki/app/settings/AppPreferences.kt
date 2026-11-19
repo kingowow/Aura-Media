@@ -67,6 +67,14 @@ data class AppPreferencesState(
     val subtitleTextScale: Float = 1f,
     val subtitleTextColor: Long = 0xFFFFFFFFL,
     val subtitleOffsetMs: Int = 0,
+    // Subtitle appearance: background fill (color + opacity), a stroke around the text
+    // (outline), and the distance of the caption block from the bottom of the video
+    // (as a fraction of the video height).
+    val subtitleBackgroundColor: Long = 0xFF000000L,
+    val subtitleBackgroundOpacity: Float = 0.76f,
+    val subtitleOutlineColor: Long = 0xFF000000L,
+    val subtitleOutlineWidthDp: Int = 0,
+    val subtitlePosition: Float = 0.08f,
     // Where "translate subtitle" sends its output. Kept next to the subtitle rendering knobs it
     // is only ever used alongside.
     val subtitleTranslationTarget: SubtitleTranslationTarget = SubtitleTranslationTarget.PERSIAN,
@@ -112,6 +120,11 @@ class AppPreferences(context: Context) {
             KEY_SUBTITLE_TEXT_SCALE,
             KEY_SUBTITLE_TEXT_COLOR,
             KEY_SUBTITLE_OFFSET_MS,
+            KEY_SUBTITLE_BACKGROUND_COLOR,
+            KEY_SUBTITLE_BACKGROUND_OPACITY,
+            KEY_SUBTITLE_OUTLINE_COLOR,
+            KEY_SUBTITLE_OUTLINE_WIDTH_DP,
+            KEY_SUBTITLE_POSITION,
             KEY_SUBTITLE_TRANSLATION_TARGET,
             KEY_SUBTITLE_TRANSLATION_ENGINE,
             KEY_SUBTITLE_TRANSLATION_API_KEY,
@@ -211,6 +224,32 @@ class AppPreferences(context: Context) {
         prefs.edit().putInt(KEY_SUBTITLE_OFFSET_MS, offsetMs.coerceIn(SUBTITLE_OFFSET_MIN_MS, SUBTITLE_OFFSET_MAX_MS)).apply()
     }
 
+    fun setSubtitleBackgroundColor(color: Long) {
+        prefs.edit().putLong(KEY_SUBTITLE_BACKGROUND_COLOR, color).apply()
+    }
+
+    fun setSubtitleBackgroundOpacity(opacity: Float) {
+        prefs.edit()
+            .putFloat(KEY_SUBTITLE_BACKGROUND_OPACITY, opacity.coerceIn(SUBTITLE_BG_OPACITY_MIN, SUBTITLE_BG_OPACITY_MAX))
+            .apply()
+    }
+
+    fun setSubtitleOutlineColor(color: Long) {
+        prefs.edit().putLong(KEY_SUBTITLE_OUTLINE_COLOR, color).apply()
+    }
+
+    fun setSubtitleOutlineWidthDp(widthDp: Int) {
+        prefs.edit()
+            .putInt(KEY_SUBTITLE_OUTLINE_WIDTH_DP, widthDp.coerceIn(SUBTITLE_OUTLINE_WIDTH_MIN, SUBTITLE_OUTLINE_WIDTH_MAX))
+            .apply()
+    }
+
+    fun setSubtitlePosition(fraction: Float) {
+        prefs.edit()
+            .putFloat(KEY_SUBTITLE_POSITION, fraction.coerceIn(SUBTITLE_POSITION_MIN, SUBTITLE_POSITION_MAX))
+            .apply()
+    }
+
     fun setSubtitleTranslationTarget(target: SubtitleTranslationTarget) {
         prefs.edit().putString(KEY_SUBTITLE_TRANSLATION_TARGET, target.name).apply()
     }
@@ -307,6 +346,11 @@ class AppPreferences(context: Context) {
         const val KEY_SUBTITLE_TEXT_SCALE = "subtitle_text_scale"
         const val KEY_SUBTITLE_TEXT_COLOR = "subtitle_text_color"
         const val KEY_SUBTITLE_OFFSET_MS = "subtitle_offset_ms"
+        const val KEY_SUBTITLE_BACKGROUND_COLOR = "subtitle_background_color"
+        const val KEY_SUBTITLE_BACKGROUND_OPACITY = "subtitle_background_opacity"
+        const val KEY_SUBTITLE_OUTLINE_COLOR = "subtitle_outline_color"
+        const val KEY_SUBTITLE_OUTLINE_WIDTH_DP = "subtitle_outline_width_dp"
+        const val KEY_SUBTITLE_POSITION = "subtitle_position"
         const val KEY_SUBTITLE_TRANSLATION_TARGET = "subtitle_translation_target"
         const val KEY_SUBTITLE_TRANSLATION_ENGINE = "subtitle_translation_engine"
         const val KEY_SUBTITLE_TRANSLATION_API_KEY = "subtitle_translation_api_key"
@@ -320,6 +364,12 @@ class AppPreferences(context: Context) {
         const val SUBTITLE_SCALE_MAX = 1.75f
         const val SUBTITLE_OFFSET_MIN_MS = -15_000
         const val SUBTITLE_OFFSET_MAX_MS = 15_000
+        const val SUBTITLE_BG_OPACITY_MIN = 0f
+        const val SUBTITLE_BG_OPACITY_MAX = 1f
+        const val SUBTITLE_OUTLINE_WIDTH_MIN = 0
+        const val SUBTITLE_OUTLINE_WIDTH_MAX = 6
+        const val SUBTITLE_POSITION_MIN = 0.0f
+        const val SUBTITLE_POSITION_MAX = 0.4f
         const val KEY_HIDE_NSFW_SOURCES = "hide_nsfw_sources"
         const val KEY_SOURCE_LANGUAGE_FILTER_SEEDED = "source_language_filter_seeded"
         const val KEY_SOURCE_REPOSITORY_URLS = "source_repository_urls"
@@ -454,6 +504,14 @@ class AppPreferences(context: Context) {
                 subtitleTextColor = prefs.getLong(KEY_SUBTITLE_TEXT_COLOR, 0xFFFFFFFFL),
                 subtitleOffsetMs = prefs.getInt(KEY_SUBTITLE_OFFSET_MS, 0)
                     .coerceIn(SUBTITLE_OFFSET_MIN_MS, SUBTITLE_OFFSET_MAX_MS),
+                subtitleBackgroundColor = prefs.getLong(KEY_SUBTITLE_BACKGROUND_COLOR, 0xFF000000L),
+                subtitleBackgroundOpacity = prefs.getFloat(KEY_SUBTITLE_BACKGROUND_OPACITY, 0.76f)
+                    .coerceIn(SUBTITLE_BG_OPACITY_MIN, SUBTITLE_BG_OPACITY_MAX),
+                subtitleOutlineColor = prefs.getLong(KEY_SUBTITLE_OUTLINE_COLOR, 0xFF000000L),
+                subtitleOutlineWidthDp = prefs.getInt(KEY_SUBTITLE_OUTLINE_WIDTH_DP, 0)
+                    .coerceIn(SUBTITLE_OUTLINE_WIDTH_MIN, SUBTITLE_OUTLINE_WIDTH_MAX),
+                subtitlePosition = prefs.getFloat(KEY_SUBTITLE_POSITION, 0.08f)
+                    .coerceIn(SUBTITLE_POSITION_MIN, SUBTITLE_POSITION_MAX),
                 subtitleTranslationTarget = prefs.getString(KEY_SUBTITLE_TRANSLATION_TARGET, null)
                     ?.let { stored -> runCatching { SubtitleTranslationTarget.valueOf(stored) }.getOrNull() }
                     ?: SubtitleTranslationTarget.PERSIAN,

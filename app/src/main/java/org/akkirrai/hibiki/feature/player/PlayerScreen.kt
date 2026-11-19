@@ -959,6 +959,11 @@ fun PlayerScreen(
             controlsVisible = controlsVisible,
             textColor = Color(preferencesState.subtitleTextColor),
             textScale = preferencesState.subtitleTextScale,
+            backgroundColor = Color(preferencesState.subtitleBackgroundColor),
+            backgroundOpacity = preferencesState.subtitleBackgroundOpacity,
+            positionFraction = preferencesState.subtitlePosition,
+            outlineColor = Color(preferencesState.subtitleOutlineColor),
+            outlineWidthDp = preferencesState.subtitleOutlineWidthDp.toFloat(),
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
@@ -1951,6 +1956,14 @@ private fun PlayerMediaPreparationEffect(
 
 /** Media3 1.8 keeps WebVTT decoding behind a compatibility switch. */
 private class LegacyTextRenderersFactory(context: Context) : DefaultRenderersFactory(context) {
+    init {
+        // The device's hardware HEVC decoder rejects some streams outright
+        // (log: "Decoder failed: c2.unisoc.hevc.decoder <- CodecException: Error 0xe") and
+        // without fallback that is a fatal error: the player loops in an error/loading state
+        // with seeking dead. Let media3 fall back to lower-priority (software) decoders.
+        setEnableDecoderFallback(true)
+    }
+
     override fun buildTextRenderers(
         context: Context,
         output: TextOutput,
@@ -2038,12 +2051,16 @@ private fun PlaybackStream.toMediaSource(
         )
         .build()
 
-    val videoSource = when (playback.streamType) {
-        PlaybackStreamType.HLS -> HlsMediaSource.Factory(dataSourceFactory)
+    val videoSource = when {
+        // A file-backed download (real .mp4 on disk): play it directly via a plain data source
+        // instead of the cache-only offline factory, which only knows Media3's binary cache.
+        playback.streamUrl.startsWith("file:") ->
+            ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)).createMediaSource(mediaItem)
+        playback.streamType == PlaybackStreamType.HLS -> HlsMediaSource.Factory(dataSourceFactory)
             .setAllowChunklessPreparation(true)
             .createMediaSource(mediaItem)
-        PlaybackStreamType.DASH -> DashMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
-        PlaybackStreamType.MP4 -> ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
+        playback.streamType == PlaybackStreamType.DASH -> DashMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
+        else -> ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
     }
     val sources = buildList<MediaSource> {
         add(videoSource)

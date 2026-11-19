@@ -219,6 +219,9 @@
     <string name="watch_status_resolving">در حال دریافت لینک…</string>
     <string name="watch_status_resolving_retry">در حال دریافت لینک، تلاش %1$d/%2$d…</string>
     <string name="watch_status_downloading">در حال دانلود %1$d%%</string>
+    <string name="watch_status_downloading_size">در حال دانلود %1$d%% — %2$s</string>
+    <string name="watch_status_downloading_size_total">در حال دانلود %1$d%% — %2$s از %3$s</string>
+    <string name="watch_status_saving">در حال ذخیره</string>
     <string name="watch_status_paused">متوقف</string>
     <string name="watch_status_failed">دانلود ناموفق بود</string>
     <string name="watch_status_watched">تماشاشده</string>
@@ -286,6 +289,9 @@
     <string name="download_notification_waiting">دانلودها در انتظار اتصال</string>
     <string name="download_notification_preparing">آماده‌سازی دانلودها • %1$d/%2$d</string>
     <string name="download_notification_progress">در حال دانلود &lt;3 • %1$d/%2$d • %3$d%%</string>
+    <string name="download_notification_progress_size">در حال دانلود &lt;3 • %1$d/%2$d • %3$d%% • %4$s</string>
+    <string name="download_notification_progress_size_total">در حال دانلود &lt;3 • %1$d/%2$d • %3$d%% • %4$s از %5$s</string>
+    <string name="download_notification_saving">در حال ذخیره...</string>
 
     <string name="trending_error_title">خطا در بارگذاری برترین انیمه‌ها</string>
     <string name="trending_load_more_error">خطا در بارگذاری بیشتر</string>
@@ -488,7 +494,7 @@
     <string name="onboarding_welcome_description">برای شروع تماشا، برنامه را در چند مرحله آماده کنیم.</string>
     <string name="onboarding_get_started">شروع کن</string>
     <string name="onboarding_source_title">اولین منبع‌ات را انتخاب کن</string>
-    <string name="onboarding_source_description">منابع انیمه را به Aura Media می‌آورند. یکی را از پایین نصب کن — اولین منبع به‌صورت خودکار انتخاب می‌شود. بعداً هم می‌توانی این کار را بکنی.</string>
+    <string name="onboarding_source_description">منابع استریم رو به آئورا مدیا اضافه کن. یکی از منابع پایین انتخاب کن — بعداً هم میتونی این کارو انجام بدی. برای انیمه AnimeOnsen و برای فیلم و سریال StreamUnity پیشنهاد میشه.</string>
     <string name="onboarding_source_no_match">منبعی برای زبان دستگاهت پیدا نشد. از فهرست کامل یکی را انتخاب کن.</string>
     <string name="onboarding_view_all_sources">مشاهده همه منابع</string>
     <string name="onboarding_all_sources_title">همه منابع انیمه</string>
@@ -839,6 +845,11 @@
     <string name="watch_player_subtitles_size">اندازه زیرنویس</string>
     <string name="watch_player_subtitles_color">رنگ زیرنویس</string>
     <string name="watch_player_subtitles_offset">زمان‌بندی زیرنویس</string>
+    <string name="watch_player_subtitles_background">پس‌زمینه زیرنویس</string>
+    <string name="watch_player_subtitles_background_opacity">شفافیت پس‌زمینه</string>
+    <string name="watch_player_subtitles_position">موقعیت زیرنویس</string>
+    <string name="watch_player_subtitles_outline">دورخطی متن</string>
+    <string name="watch_player_subtitles_outline_width">ضخامت دورخطی</string>
     <string name="library_local_videos">ویدیوهای دستگاه</string>
     <string name="local_video_pick">انتخاب ویدیو</string>
     <string name="local_video_recent">اخیراً پخش‌شده</string>

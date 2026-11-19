@@ -219,6 +219,9 @@
     <string name="watch_status_resolving">Fetching link…</string>
     <string name="watch_status_resolving_retry">Fetching link, attempt %1$d/%2$d…</string>
     <string name="watch_status_downloading">Downloading %1$d%%</string>
+    <string name="watch_status_downloading_size">Downloading %1$d%% — %2$s</string>
+    <string name="watch_status_downloading_size_total">Downloading %1$d%% — %2$s of %3$s</string>
+    <string name="watch_status_saving">Saving…</string>
     <string name="watch_status_paused">Paused</string>
     <string name="watch_status_failed">Download failed</string>
     <string name="watch_status_watched">Watched</string>
@@ -260,6 +263,14 @@
     <string name="watch_player_settings_player">Player</string>
     <string name="watch_player_settings_quality">Quality</string>
     <string name="watch_player_settings_subtitles">Subtitles</string>
+    <string name="watch_player_subtitles_size">Subtitle size</string>
+    <string name="watch_player_subtitles_color">Subtitle color</string>
+    <string name="watch_player_subtitles_background">Subtitle background</string>
+    <string name="watch_player_subtitles_background_opacity">Background opacity</string>
+    <string name="watch_player_subtitles_position">Subtitle position</string>
+    <string name="watch_player_subtitles_outline">Text outline</string>
+    <string name="watch_player_subtitles_outline_width">Outline width</string>
+    <string name="watch_player_subtitles_offset">Subtitle delay</string>
     <string name="watch_player_subtitles_off">Off</string>
     <string name="watch_player_subtitles_add">Add subtitle file</string>
     <string name="watch_player_subtitles_custom">Custom</string>
@@ -286,6 +297,9 @@
     <string name="download_notification_waiting">Downloads are waiting for connection</string>
     <string name="download_notification_preparing">Preparing downloads • %1$d/%2$d</string>
     <string name="download_notification_progress">Downloading &lt;3 • %1$d/%2$d • %3$d%%</string>
+    <string name="download_notification_progress_size">Downloading &lt;3 • %1$d/%2$d • %3$d%% • %4$s</string>
+    <string name="download_notification_progress_size_total">Downloading &lt;3 • %1$d/%2$d • %3$d%% • %4$s / %5$s</string>
+    <string name="download_notification_saving">Saving…</string>
 
     <string name="trending_error_title">Failed to load top anime</string>
     <string name="trending_load_more_error">Failed to load more</string>
@@ -832,10 +846,6 @@
     <string name="subtitle_search_language_arabic">Arabic</string>
     <string name="subtitle_search_open_in_browser">Open in browser</string>
     <string name="subtitle_search_gate_hint">The page was opened for you; the download link appears after a few seconds — download the subtitle file manually, then search again.</string>
-    <!-- Player subtitle settings -->
-    <string name="watch_player_subtitles_size">Subtitle size</string>
-    <string name="watch_player_subtitles_color">Subtitle color</string>
-    <string name="watch_player_subtitles_offset">Subtitle timing</string>
     <string name="library_local_videos">Local videos</string>
     <string name="local_video_pick">Select video</string>
     <string name="local_video_recent">Recently played</string>
